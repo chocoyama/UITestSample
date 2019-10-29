@@ -56,48 +56,42 @@ extension Page {
 
 extension Page {
     @discardableResult
-    func assert(_ assertionHandler: (Self) -> Void) -> Self {
+    func then(_ assertionHandler: (Self) -> Void) -> Self {
         assertionHandler(self)
         return self
     }
     
-//    @discardableResult
-//    func assertExists(_ keyPath: KeyPath<Self, XCUIElement>, timeout: TimeInterval = 3.0) -> Self {
-//        XCTAssertTrue(self[keyPath: keyPath].waitForExistence(timeout: timeout))
-//        return self
-//    }
+    @discardableResult
+    func thenTransitionAndReturn<T: Page>(_ nextPageHandler: (T) -> Void) -> Self {
+        let nextPage = T.init(app: self.app)
+        nextPageHandler(nextPage)
+        return self
+    }
+    
+    @discardableResult
+    func thenTransitionTo<T: Page>(_ type: T.Type) -> T {
+        T.init(app: self.app)
+    }
+    
+    @discardableResult
+    func thenTransitionTo<T: Page>(_ nextPageHandler: (T) -> Void) -> T {
+        let nextPage = T.init(app: self.app)
+        nextPageHandler(nextPage)
+        return nextPage
+    }
 }
 
 extension Page {
     @discardableResult
-    func screenshot(_ name: String, context testCase: XCTestCase, lifetime: XCTAttachment.Lifetime = .keepAlways) -> Self {
+    func screenshot(context testCase: XCTestCase, name: String? = nil, lifetime: XCTAttachment.Lifetime = .keepAlways) -> Self {
         let screenshot = XCUIScreen.main.screenshot()
         let attachment = XCTAttachment(uniformTypeIdentifier: "public.png",
-                                       name: "\(name).png",
+                                       name: "\(name ?? testCase.name).png",
                                        payload: screenshot.pngRepresentation,
                                        userInfo: nil)
         attachment.lifetime = lifetime
         testCase.add(attachment)
         return self
-    }
-    
-    @discardableResult
-    func transitionThenReturn<T: Page>(_ nextPageHandler: (T) -> Void) -> Self {
-        let nextPage = T.init(app: self.app)
-        nextPageHandler(nextPage)
-        return self
-    }
-    
-    @discardableResult
-    func transitionTo<T: Page>(_ type: T.Type) -> T {
-        T.init(app: self.app)
-    }
-    
-    @discardableResult
-    func transitionTo<T: Page>(_ nextPageHandler: (T) -> Void) -> T {
-        let nextPage = T.init(app: self.app)
-        nextPageHandler(nextPage)
-        return nextPage
     }
     
     @discardableResult

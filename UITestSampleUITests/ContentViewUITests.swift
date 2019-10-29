@@ -20,19 +20,11 @@ class ContentViewUITests: XCTestCase {
     func testExample() {
         contentPage
             .visit()
-            .tap(\.button1)
-            .assert { (contentPage: ContentPage) in
-                XCTAssertEqual(contentPage.text1.label, "Tapped1")
-            }
-            .tap(\.button2)
-            .assert { (contentPage: ContentPage) in
-                XCTAssertEqual(contentPage.text1.label, "Tapped2")
-            }
-            .tap(\.presentationButton)
-            .transitionTo { (presentationPage: PresentationPage) in
-                presentationPage
-                    .assert { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
-                    .screenshot("PresentationPage", context: self)
+            .tap(\.button1).then { XCTAssertEqual($0.text1.label, "Tapped1") }
+            .tap(\.button2).then { XCTAssertEqual($0.text1.label, "Tapped2") }
+            .tap(\.presentationButton).thenTransitionTo { (presentationPage: PresentationPage) in
+                presentationPage.then { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
+                    .screenshot(context: self)
             }
     }
     
@@ -41,17 +33,13 @@ class ContentViewUITests: XCTestCase {
             .start("ContentView") {
                 contentPage
                     .visit()
-                    .tap(\.button1)
-                    .assert { XCTAssertEqual($0.text1.label, "Tapped1") }
-                    .tap(\.button2)
-                    .assert { XCTAssertEqual($0.text1.label, "Tapped2") }
-                    .tap(\.presentationButton)
-                    .transitionTo(PresentationPage.self)
+                    .tap(\.button1).then { XCTAssertEqual($0.text1.label, "Tapped1") }
+                    .tap(\.button2).then { XCTAssertEqual($0.text1.label, "Tapped2") }
+                    .tap(\.presentationButton).thenTransitionTo(PresentationPage.self)
             }
             .then("PresentationView") { (presentationPage: PresentationPage) in
-                presentationPage
-                    .assert { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
-                    .screenshot("PresentationPage", context: self)
+                presentationPage.then { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
+                    .screenshot(context: self)
             }
     }
 }
