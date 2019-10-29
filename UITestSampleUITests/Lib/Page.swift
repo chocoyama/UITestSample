@@ -57,6 +57,12 @@ extension Page {
 
 extension Page {
     @discardableResult
+    func waitForExistence(_ keyPath: KeyPath<Self, XCUIElement>, timeout: TimeInterval = 3.0) -> Self {
+        let _ = self[keyPath: keyPath].waitForExistence(timeout: timeout)
+        return self
+    }
+    
+    @discardableResult
     func then(_ assertionHandler: (Self) -> Void) -> Self {
         assertionHandler(self)
         return self
@@ -108,14 +114,14 @@ struct Scenario {
     init(_ title: String)  {}
     
     @discardableResult
-    func start<T>(_ title: String, _ handler: () -> T) -> T {
+    func scene<T>(_ title: String, _ handler: () -> T) -> T {
         handler()
     }
 }
 
 extension Page {
     @discardableResult
-    func then<T>(_ title: String, _ handler: (Self) -> T) -> T {
+    func scene<T>(_ title: String, _ handler: (Self) -> T) -> T {
         handler(self)
     }
 }
