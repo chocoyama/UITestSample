@@ -11,7 +11,7 @@ import SwiftUI
 struct PresentationView: View {
     var body: some View {
         Text("PresentationView")
-            .accessibility(identifier: .presentationViewLabel)
+            .accessibility(identifier: "PresentationView.Text")
     }
 }
 

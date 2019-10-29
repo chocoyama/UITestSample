@@ -15,21 +15,21 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Text(text)
-                .accessibility(identifier: .contentViewLabel)
+                .accessibility(identifier: "ContentView.Text")
             
             Button(action: {
                 self.text = "Tapped1"
             }) {
                 Text("Button1")
             }
-            .accessibility(identifier: .contentViewButton1)
+            .accessibility(identifier: "ContentView.Button1")
             
             Button(action: {
                 self.text = "Tapped2"
             }) {
                 Text("Button2")
             }
-            .accessibility(identifier: .contentViewButton2)
+            .accessibility(identifier: "ContentView.Button2")
             
             Button(action: {
                 self.text = "Sheet"
@@ -42,7 +42,7 @@ struct ContentView: View {
                     self.sheetPresented = false
                 }
             }
-            .accessibility(identifier: .contentViewPresentationButton)
+            .accessibility(identifier: "ContentView.PresentationButton")
         }
     }
 }

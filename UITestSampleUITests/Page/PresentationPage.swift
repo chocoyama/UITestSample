@@ -11,7 +11,7 @@ import XCTest
 struct PresentationPage: Page {
     var app: XCUIApplication
     
-    var label: XCUIElement { app.staticTexts(.presentationViewLabel) }
+    var label: XCUIElement { app.staticTexts["PresentationView.Text"] }
     
     init(app: XCUIApplication) {
         self.app = app
