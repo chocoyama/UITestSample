@@ -61,11 +61,11 @@ extension Page {
         return self
     }
     
-    @discardableResult
-    func assertExists(_ keyPath: KeyPath<Self, XCUIElement>, timeout: TimeInterval = 3.0) -> Self {
-        XCTAssertTrue(self[keyPath: keyPath].waitForExistence(timeout: timeout))
-        return self
-    }
+//    @discardableResult
+//    func assertExists(_ keyPath: KeyPath<Self, XCUIElement>, timeout: TimeInterval = 3.0) -> Self {
+//        XCTAssertTrue(self[keyPath: keyPath].waitForExistence(timeout: timeout))
+//        return self
+//    }
 }
 
 extension Page {

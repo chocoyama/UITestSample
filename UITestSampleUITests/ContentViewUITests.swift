@@ -31,7 +31,7 @@ class ContentViewUITests: XCTestCase {
             .tap(\.presentationButton)
             .transitionTo { (presentationPage: PresentationPage) in
                 presentationPage
-                    .assertExists(\.label)
+                    .assert { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
                     .screenshot("PresentationPage", context: self)
             }
     }
@@ -42,19 +42,15 @@ class ContentViewUITests: XCTestCase {
                 contentPage
                     .visit()
                     .tap(\.button1)
-                    .assert { (contentPage: ContentPage) in
-                        XCTAssertEqual(contentPage.text1.label, "Tapped1")
-                }
-                .tap(\.button2)
-                .assert { (contentPage: ContentPage) in
-                    XCTAssertEqual(contentPage.text1.label, "Tapped2")
-                }
-                .tap(\.presentationButton)
-                .transitionTo(PresentationPage.self)
+                    .assert { XCTAssertEqual($0.text1.label, "Tapped1") }
+                    .tap(\.button2)
+                    .assert { XCTAssertEqual($0.text1.label, "Tapped2") }
+                    .tap(\.presentationButton)
+                    .transitionTo(PresentationPage.self)
             }
             .then("PresentationView") { (presentationPage: PresentationPage) in
                 presentationPage
-                    .assertExists(\.label)
+                    .assert { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
                     .screenshot("PresentationPage", context: self)
             }
     }
