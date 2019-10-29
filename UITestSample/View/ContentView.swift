@@ -17,32 +17,20 @@ struct ContentView: View {
             Text(text)
                 .accessibility(identifier: "ContentView.Text")
             
-            Button(action: {
-                self.text = "Tapped1"
-            }) {
+            Button(action: { self.text = "Tapped1" }) {
                 Text("Button1")
-            }
-            .accessibility(identifier: "ContentView.Button1")
+            }.accessibility(identifier: "ContentView.Button1")
             
-            Button(action: {
-                self.text = "Tapped2"
-            }) {
+            Button(action: { self.text = "Tapped2" }) {
                 Text("Button2")
-            }
-            .accessibility(identifier: "ContentView.Button2")
+            }.accessibility(identifier: "ContentView.Button2")
             
-            Button(action: {
-                self.text = "Sheet"
-                self.sheetPresented = true
-            }) {
+            Button(action: { self.text = "Sheet"; self.sheetPresented = true }) {
                 Text("Sheet")
-            }
-            .sheet(isPresented: $sheetPresented) {
-                PresentationView().onDisappear {
-                    self.sheetPresented = false
-                }
-            }
-            .accessibility(identifier: "ContentView.PresentationButton")
+            }.sheet(isPresented: $sheetPresented) {
+                PresentationView()
+                    .onDisappear { self.sheetPresented = false }
+            }.accessibility(identifier: "ContentView.PresentationButton")
         }
     }
 }

@@ -16,8 +16,30 @@ class ContentViewUITests: XCTestCase {
         continueAfterFailure = true
         contentPage = ContentPage(app: XCUIApplication())
     }
+    
+    func testPlain() {
+        let app = XCUIApplication()
+        app.launch()
+        
+        app.buttons["ContentView.Button1"].tap()
+        XCTAssertEqual(app.staticTexts["ContentView.Text"].label, "Tapped1")
+        
+        app.buttons["ContentView.Button2"].tap()
+        XCTAssertEqual(app.staticTexts["ContentView.Text"].label, "Tapped2")
+        
+        app.buttons["ContentView.PresentationButton"].tap()
+        XCTAssertTrue(app.staticTexts["PresentationView.Text"].waitForExistence(timeout: 3.0))
+        
+        let screenshot = XCUIScreen.main.screenshot()
+        let attachment = XCTAttachment(uniformTypeIdentifier: "public.png",
+                                       name: "\(name).png",
+                                       payload: screenshot.pngRepresentation,
+                                       userInfo: nil)
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
 
-    func testExample() {
+    func testPageObject() {
         contentPage
             .visit()
             .tap(\.button1).then { XCTAssertEqual($0.text1.label, "Tapped1") }
