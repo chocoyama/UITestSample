@@ -9,23 +9,31 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var text: String = ""
+    @State var favoriteCount: Int = 0
+    @State var starCount: Int = 0
     @State var sheetPresented = false
     
     var body: some View {
         VStack {
-            Text(text)
-                .accessibility(identifier: "ContentView.Text")
+            HStack {
+                Button(action: { self.favoriteCount += 1 }) {
+                    Image(systemName: "heart.fill")
+                }.accessibility(identifier: "ContentView.FavoriteButton")
+                
+                Text("\(favoriteCount)")
+                    .accessibility(identifier: "ContentView.FavoriteText")
+            }
             
-            Button(action: { self.text = "Tapped1" }) {
-                Text("Button1")
-            }.accessibility(identifier: "ContentView.Button1")
+            HStack {
+                Button(action: { self.starCount += 1 }) {
+                    Image(systemName: "star.fill")
+                }.accessibility(identifier: "ContentView.StarButton")
+                
+                Text("\(starCount)")
+                    .accessibility(identifier: "ContentView.StarText")
+            }
             
-            Button(action: { self.text = "Tapped2" }) {
-                Text("Button2")
-            }.accessibility(identifier: "ContentView.Button2")
-            
-            Button(action: { self.text = "Sheet"; self.sheetPresented = true }) {
+            Button(action: { self.sheetPresented = true }) {
                 Text("Sheet")
             }.sheet(isPresented: $sheetPresented) {
                 PresentationView()

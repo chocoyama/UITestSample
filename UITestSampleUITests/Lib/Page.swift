@@ -18,8 +18,9 @@ protocol Page {
 
 extension Page {
     @discardableResult
-    func tap(_ keyPath: KeyPath<Self, XCUIElement>) -> Self {
-        self[keyPath: keyPath].tap()
+    func tap(_ keyPath: KeyPath<Self, XCUIElement>, count: Int = 1) -> Self {
+        let element = self[keyPath: keyPath]
+        (0..<count).forEach { _ in element.tap() }
         return self
     }
     

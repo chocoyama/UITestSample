@@ -21,20 +21,31 @@ class ContentViewUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
         
-        app.buttons["ContentView.Button1"].tap()
-        XCTAssertEqual(app.staticTexts["ContentView.Text"].label, "Tapped1")
+        app.buttons["ContentView.FavoriteButton"].tap()
+        XCTAssertEqual(app.staticTexts["ContentView.FavoriteText"].label, "1")
         
-        app.buttons["ContentView.Button2"].tap()
-        XCTAssertEqual(app.staticTexts["ContentView.Text"].label, "Tapped2")
+        let starButton = app.buttons["ContentView.StarButton"]
+        starButton.tap()
+        starButton.tap()
+        starButton.tap()
+        XCTAssertEqual(app.staticTexts["ContentView.StarText"].label, "3")
+        
+        var screenshot = XCUIScreen.main.screenshot()
+        var attachment = XCTAttachment(uniformTypeIdentifier: "public.png",
+                                       name: "ContentView.png",
+                                       payload: screenshot.pngRepresentation,
+                                       userInfo: nil)
+        attachment.lifetime = .keepAlways
+        add(attachment)
         
         app.buttons["ContentView.PresentationButton"].tap()
         XCTAssertTrue(app.staticTexts["PresentationView.Text"].waitForExistence(timeout: 3.0))
         
-        let screenshot = XCUIScreen.main.screenshot()
-        let attachment = XCTAttachment(uniformTypeIdentifier: "public.png",
-                                       name: "\(name).png",
-                                       payload: screenshot.pngRepresentation,
-                                       userInfo: nil)
+        screenshot = XCUIScreen.main.screenshot()
+        attachment = XCTAttachment(uniformTypeIdentifier: "public.png",
+                                   name: "PresentationView.png",
+                                   payload: screenshot.pngRepresentation,
+                                   userInfo: nil)
         attachment.lifetime = .keepAlways
         add(attachment)
     }
@@ -42,11 +53,12 @@ class ContentViewUITests: XCTestCase {
     func testPageObject() {
         contentPage
             .visit()
-            .tap(\.button1).then { XCTAssertEqual($0.text1.label, "Tapped1") }
-            .tap(\.button2).then { XCTAssertEqual($0.text1.label, "Tapped2") }
+            .tap(\.favoriteButton).then { XCTAssertEqual($0.favoriteText.label, "1") }
+            .tap(\.starButton, count: 3).then { XCTAssertEqual($0.starText.label, "3") }
+            .screenshot(context: self, name: "ContentView")
             .tap(\.presentationButton).thenTransitionTo { (presentationPage: PresentationPage) in
                 presentationPage.then { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
-                    .screenshot(context: self)
+                    .screenshot(context: self, name: "PresentationView")
             }
     }
     
@@ -55,13 +67,14 @@ class ContentViewUITests: XCTestCase {
             .start("ContentView") {
                 contentPage
                     .visit()
-                    .tap(\.button1).then { XCTAssertEqual($0.text1.label, "Tapped1") }
-                    .tap(\.button2).then { XCTAssertEqual($0.text1.label, "Tapped2") }
+                    .tap(\.favoriteButton).then { XCTAssertEqual($0.favoriteText.label, "1") }
+                    .tap(\.starButton, count: 3).then { XCTAssertEqual($0.starText.label, "3") }
+                    .screenshot(context: self, name: "ContentView")
                     .tap(\.presentationButton).thenTransitionTo(PresentationPage.self)
             }
             .then("PresentationView") { (presentationPage: PresentationPage) in
                 presentationPage.then { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
-                    .screenshot(context: self)
+                    .screenshot(context: self, name: "PresentationView")
             }
     }
 }
