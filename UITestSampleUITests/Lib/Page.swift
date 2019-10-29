@@ -11,6 +11,8 @@ import XCTest
 protocol Page {
     var app: XCUIApplication { get }
     init(app: XCUIApplication)
+    
+    /// 該当の画面へ遷移することができる手順を記述する
     @discardableResult func visit() -> Self
 }
 
@@ -80,10 +82,22 @@ extension Page {
     }
     
     @discardableResult
-    func transitionTo<T: Page>(_ nextPageHandler: (T) -> Void) -> Self {
+    func transitionThenReturn<T: Page>(_ nextPageHandler: (T) -> Void) -> Self {
         let nextPage = T.init(app: self.app)
         nextPageHandler(nextPage)
         return self
+    }
+    
+    @discardableResult
+    func transitionTo<T: Page>(_ type: T.Type) -> T {
+        T.init(app: self.app)
+    }
+    
+    @discardableResult
+    func transitionTo<T: Page>(_ nextPageHandler: (T) -> Void) -> T {
+        let nextPage = T.init(app: self.app)
+        nextPageHandler(nextPage)
+        return nextPage
     }
     
     @discardableResult
@@ -91,5 +105,22 @@ extension Page {
         let stopDate = Date().addingTimeInterval(duration)
         RunLoop.main.run(until: stopDate)
         return self
+    }
+    
+}
+
+struct Scenario {
+    init(_ title: String)  {}
+    
+    @discardableResult
+    func start<T>(_ title: String, _ handler: () -> T) -> T {
+        handler()
+    }
+}
+
+extension Page {
+    @discardableResult
+    func then<T>(_ title: String, _ handler: (Self) -> T) -> T {
+        handler(self)
     }
 }

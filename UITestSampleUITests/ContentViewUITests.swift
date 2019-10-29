@@ -35,4 +35,27 @@ class ContentViewUITests: XCTestCase {
                     .screenshot("PresentationPage", context: self)
             }
     }
+    
+    func testScenario() {
+        Scenario("ボタンをタップして遷移する")
+            .start("ContentView") {
+                contentPage
+                    .visit()
+                    .tap(\.button1)
+                    .assert { (contentPage: ContentPage) in
+                        XCTAssertEqual(contentPage.text1.label, "Tapped1")
+                }
+                .tap(\.button2)
+                .assert { (contentPage: ContentPage) in
+                    XCTAssertEqual(contentPage.text1.label, "Tapped2")
+                }
+                .tap(\.presentationButton)
+                .transitionTo(PresentationPage.self)
+            }
+            .then("PresentationView") { (presentationPage: PresentationPage) in
+                presentationPage
+                    .assertExists(\.label)
+                    .screenshot("PresentationPage", context: self)
+            }
+    }
 }

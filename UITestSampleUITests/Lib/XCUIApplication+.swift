@@ -9,43 +9,43 @@
 import XCTest
 
 extension XCUIApplication {
-    func getButtonBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func buttons(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         buttons[accessibilityIdentifier.value]
     }
     
-    func getStaticTextBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func staticTexts(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         staticTexts[accessibilityIdentifier.value]
     }
     
-    func getOtherElementBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func otherElements(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         otherElements[accessibilityIdentifier.value]
     }
     
-    func getNavigationBarBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func navigationBars(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         navigationBars[accessibilityIdentifier.value]
     }
     
-    func getTabBarsBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func tabBars(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         tabBars[accessibilityIdentifier.value]
     }
     
-    func getCollectionViewBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func collectionViews(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         collectionViews[accessibilityIdentifier.value]
     }
     
-    func getTextFieldBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func textFields(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         textFields[accessibilityIdentifier.value]
     }
     
-    func getTextViewBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func textViews(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         textViews[accessibilityIdentifier.value]
     }
     
-    func getTableViewBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func tables(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         tables[accessibilityIdentifier.value]
     }
     
-    func getSheetBy(id accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
+    func sheets(_ accessibilityIdentifier: AccessibilityIdentifier) -> XCUIElement {
         sheets[accessibilityIdentifier.value]
     }
 }
