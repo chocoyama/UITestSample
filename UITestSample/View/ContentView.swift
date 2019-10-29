@@ -34,9 +34,9 @@ struct ContentView: View {
             }
             
             Button(action: { self.sheetPresented = true }) {
-                Text("Sheet")
+                Text("Show List")
             }.sheet(isPresented: $sheetPresented) {
-                PresentationView()
+                ListView()
                     .onDisappear { self.sheetPresented = false }
             }.accessibility(identifier: "ContentView.PresentationButton")
         }

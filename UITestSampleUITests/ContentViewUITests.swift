@@ -39,15 +39,17 @@ class ContentViewUITests: XCTestCase {
         add(attachment)
         
         app.buttons["ContentView.PresentationButton"].tap()
-        XCTAssertTrue(app.staticTexts["PresentationView.Text"].waitForExistence(timeout: 3.0))
+        XCTAssertTrue(app.tables["ListView.List"].waitForExistence(timeout: 3.0))
         
         screenshot = XCUIScreen.main.screenshot()
         attachment = XCTAttachment(uniformTypeIdentifier: "public.png",
-                                   name: "PresentationView.png",
+                                   name: "ListView.png",
                                    payload: screenshot.pngRepresentation,
                                    userInfo: nil)
         attachment.lifetime = .keepAlways
         add(attachment)
+        
+        app.tables["ListView.List"].buttons["0"].tap()
     }
 
     func testPageObject() {
@@ -56,25 +58,35 @@ class ContentViewUITests: XCTestCase {
             .tap(\.favoriteButton).then { XCTAssertEqual($0.favoriteText.label, "1") }
             .tap(\.starButton, count: 3).then { XCTAssertEqual($0.starText.label, "3") }
             .screenshot(context: self, name: "ContentView")
-            .tap(\.presentationButton).thenTransitionTo { (presentationPage: PresentationPage) in
-                presentationPage.then { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
-                    .screenshot(context: self, name: "PresentationView")
+            .tap(\.presentationButton).thenTransitionTo { (listPage: ListPage) in
+                listPage.then { XCTAssertTrue($0.list.waitForExistence(timeout: 3.0)) }
+                    .screenshot(context: self, name: "ListView")
+                    .tap(\.cell).thenTransitionTo { (detailPage: DetailPage) in
+                        detailPage.then { XCTAssertTrue($0.text.waitForExistence(timeout: 3.0)) }
+                            .screenshot(context: self, name: "DetailView")
+                    }
             }
     }
     
     func testScenario() {
         Scenario("ボタンをタップして遷移する")
-            .start("ContentView") {
+            .start("ContentViewが表示される") {
                 contentPage
                     .visit()
                     .tap(\.favoriteButton).then { XCTAssertEqual($0.favoriteText.label, "1") }
                     .tap(\.starButton, count: 3).then { XCTAssertEqual($0.starText.label, "3") }
                     .screenshot(context: self, name: "ContentView")
-                    .tap(\.presentationButton).thenTransitionTo(PresentationPage.self)
+                    .tap(\.presentationButton).thenTransitionTo(ListPage.self)
             }
-            .then("PresentationView") { (presentationPage: PresentationPage) in
-                presentationPage.then { XCTAssertTrue($0.label.waitForExistence(timeout: 3.0)) }
-                    .screenshot(context: self, name: "PresentationView")
+            .then("ListViewに遷移") { (listPage: ListPage) in
+                listPage.then { XCTAssertTrue($0.list.waitForExistence(timeout: 3.0)) }
+                    .screenshot(context: self, name: "ListView")
+                    .tap(\.cell).thenTransitionTo(DetailPage.self)
             }
+            .then("DetailViewに遷移") { (detailPage: DetailPage) in
+                detailPage.then { XCTAssertTrue($0.text.waitForExistence(timeout: 3.0)) }
+                    .screenshot(context: self, name: "DetailView")
+            }
+        
     }
 }

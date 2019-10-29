@@ -8,16 +8,17 @@
 
 import XCTest
 
-struct PresentationPage: Page {
+struct ListPage: Page {
     var app: XCUIApplication
     
-    var label: XCUIElement { app.staticTexts["PresentationView.Text"] }
+    var list: XCUIElement { app.tables["ListView.List"] }
+    var cell: XCUIElement { list.buttons["0"] }
     
     init(app: XCUIApplication) {
         self.app = app
     }
     
-    func visit() -> PresentationPage {
+    func visit() -> ListPage {
         ContentPage(app: app)
             .visit()
             .tap(\.presentationButton)
