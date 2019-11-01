@@ -12,7 +12,7 @@ struct ListPage: Page {
     var app: XCUIApplication
     
     var list: XCUIElement { app.tables["ListView.List"] }
-    var cell: XCUIElement { list.buttons["0"] }
+    var thirdCell: XCUIElement { list.buttons["2"] }
     
     init(app: XCUIApplication) {
         self.app = app

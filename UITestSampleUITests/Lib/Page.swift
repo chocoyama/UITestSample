@@ -12,45 +12,81 @@ protocol Page {
     var app: XCUIApplication { get }
     init(app: XCUIApplication)
     
-    /// 該当の画面へ遷移することができる手順を記述する
+    /// Describes the procedure for transitioning to the target screen
     @discardableResult func visit() -> Self
 }
 
 extension Page {
     @discardableResult
-    func tap(_ keyPath: KeyPath<Self, XCUIElement>, count: Int = 1) -> Self {
-        let element = self[keyPath: keyPath]
+    func tap(
+        _ keyPath: KeyPath<Self, XCUIElement>,
+        count: Int = 1,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> Self {
+        let element = self[keyPath: keyPath].failIfNotExists(file: file, line: line)
         (0..<count).forEach { _ in element.tap() }
         return self
     }
     
     @discardableResult
-    func type(text: String, for keyPath: KeyPath<Self, XCUIElement>) -> Self {
-        self[keyPath: keyPath].typeText(text)
+    func type(
+        text: String,
+        for keyPath: KeyPath<Self, XCUIElement>,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> Self {
+        self[keyPath: keyPath]
+            .failIfNotExists(file: file, line: line)
+            .typeText(text)
         return self
     }
     
     @discardableResult
-    func swipeUp(_ keyPath: KeyPath<Self, XCUIElement>) -> Self {
-        self[keyPath: keyPath].swipeUp()
+    func swipeUp(
+        _ keyPath: KeyPath<Self, XCUIElement>,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> Self {
+        self[keyPath: keyPath]
+            .failIfNotExists(file: file, line: line)
+            .swipeUp()
         return self
     }
     
     @discardableResult
-    func swipeDown(_ keyPath: KeyPath<Self, XCUIElement>) -> Self {
-        self[keyPath: keyPath].swipeDown()
+    func swipeDown(
+        _ keyPath: KeyPath<Self, XCUIElement>,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> Self {
+        self[keyPath: keyPath]
+            .failIfNotExists(file: file, line: line)
+            .swipeDown()
         return self
     }
     
     @discardableResult
-    func swipeRight(_ keyPath: KeyPath<Self, XCUIElement>) -> Self {
-        self[keyPath: keyPath].swipeRight()
+    func swipeRight(
+        _ keyPath: KeyPath<Self, XCUIElement>,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> Self {
+        self[keyPath: keyPath]
+            .failIfNotExists(file: file, line: line)
+            .swipeRight()
         return self
     }
     
     @discardableResult
-    func swipeLeft(_ keyPath: KeyPath<Self, XCUIElement>) -> Self {
-        self[keyPath: keyPath].swipeLeft()
+    func swipeLeft(
+        _ keyPath: KeyPath<Self, XCUIElement>,
+        file: StaticString = #file,
+        line: UInt = #line
+    ) -> Self {
+        self[keyPath: keyPath]
+            .failIfNotExists(file: file, line: line)
+            .swipeLeft()
         return self
     }
 }
@@ -59,6 +95,25 @@ extension Page {
     @discardableResult
     func waitForExistence(_ keyPath: KeyPath<Self, XCUIElement>, timeout: TimeInterval = 3.0) -> Self {
         let _ = self[keyPath: keyPath].waitForExistence(timeout: timeout)
+        return self
+    }
+    
+    @discardableResult
+    func waitForHittable(_ keyPath: KeyPath<Self, XCUIElement>, timeout: TimeInterval = 3.0) -> Self {
+        let expectation = XCTKVOExpectation(keyPath: "isHittable",
+                                            object: self[keyPath: keyPath],
+                                            expectedValue: true)
+        let _ = XCTWaiter().wait(for: [expectation], timeout: timeout)
+        return self
+    }
+    
+    @discardableResult
+    func wait(for description: String, timeout: TimeInterval) -> Self {
+        let expectation = XCTestExpectation(description: description)
+        DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
+            expectation.fulfill()
+        }
+        XCTWaiter().wait(for: [expectation], timeout: timeout + 1)
         return self
     }
     
@@ -91,7 +146,7 @@ extension Page {
 extension Page {
     @discardableResult
     func screenshot(context testCase: XCTestCase, name: String? = nil, lifetime: XCTAttachment.Lifetime = .keepAlways) -> Self {
-        let screenshot = XCUIScreen.main.screenshot()
+        let screenshot = XCUIApplication().screenshot()
         let attachment = XCTAttachment(uniformTypeIdentifier: "public.png",
                                        name: "\(name ?? testCase.name).png",
                                        payload: screenshot.pngRepresentation,
@@ -123,5 +178,15 @@ extension Page {
     @discardableResult
     func scene<T>(_ title: String, _ handler: (Self) -> T) -> T {
         handler(self)
+    }
+}
+
+private extension XCUIElement {
+    @discardableResult
+    func failIfNotExists(file: StaticString, line: UInt) -> Self {
+        if !exists {
+            XCTFail(file: file, line: line)
+        }
+        return self
     }
 }

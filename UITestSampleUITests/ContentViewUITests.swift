@@ -17,7 +17,7 @@ class ContentViewUITests: XCTestCase {
         contentPage = ContentPage(app: XCUIApplication())
     }
     
-    func testPlain() {
+    func testUIRecording() {
         let app = XCUIApplication()
         app.launch()
         
@@ -52,9 +52,10 @@ class ContentViewUITests: XCTestCase {
         attachment.lifetime = .keepAlways
         add(attachment)
         
-        app.tables["ListView.List"].buttons["0"].tap()
+        app.tables["ListView.List"].buttons["2"].tap()
         
         XCTAssertTrue(app.staticTexts["DetailView.Text"].waitForExistence(timeout: 3.0))
+        XCTAssertEqual(app.staticTexts["DetailView.Text"].label, "2")
         
         screenshot = XCUIScreen.main.screenshot()
         attachment = XCTAttachment(uniformTypeIdentifier: "public.png",
@@ -76,8 +77,8 @@ class ContentViewUITests: XCTestCase {
             .tap(\.presentationButton).thenTransitionTo { (listPage: ListPage) in
                 listPage.waitForExistence(\.list).then { XCTAssertTrue($0.list.exists) }
                     .screenshot(context: self, name: "ListView")
-                    .tap(\.cell).thenTransitionTo { (detailPage: DetailPage) in
-                        detailPage.waitForExistence(\.text).then { XCTAssertTrue($0.text.exists) }
+                    .tap(\.thirdCell).thenTransitionTo { (detailPage: DetailPage) in
+                        detailPage.waitForExistence(\.text).then { XCTAssertEqual($0.text.label, "2") }
                             .screenshot(context: self, name: "DetailView")
                     }
             }
@@ -99,11 +100,11 @@ class ContentViewUITests: XCTestCase {
                 listPage
                     .waitForExistence(\.list).then { XCTAssertTrue($0.list.exists) }
                     .screenshot(context: self, name: "ListView")
-                    .tap(\.cell).thenTransitionTo(DetailPage.self)
+                    .tap(\.thirdCell).thenTransitionTo(DetailPage.self)
             }
             .scene("セルをタップしてDetailViewに遷移後") { (detailPage: DetailPage) in
                 detailPage
-                    .waitForExistence(\.text).then { XCTAssertTrue($0.text.exists) }
+                    .waitForExistence(\.text).then { XCTAssertEqual($0.text.label, "2") }
                     .screenshot(context: self, name: "DetailView")
             }
         

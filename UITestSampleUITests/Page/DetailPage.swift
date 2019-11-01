@@ -20,7 +20,7 @@ struct DetailPage: Page {
     func visit() -> DetailPage {
         ListPage(app: app)
             .visit()
-            .tap(\.cell)
+            .tap(\.thirdCell)
         return self
     }
 }
