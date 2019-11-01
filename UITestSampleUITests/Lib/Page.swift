@@ -155,28 +155,20 @@ extension Page {
         testCase.add(attachment)
         return self
     }
-    
-    @discardableResult
-    func wait(_ duration: TimeInterval) -> Self {
-        let stopDate = Date().addingTimeInterval(duration)
-        RunLoop.main.run(until: stopDate)
-        return self
-    }
-    
 }
 
 struct Scenario {
-    init(_ title: String)  {}
+    init(_ title: String = "")  {}
     
     @discardableResult
-    func scene<T>(_ title: String, _ handler: () -> T) -> T {
+    func scene<T: Page>(_ title: String, _ handler: () -> T) -> T {
         handler()
     }
 }
 
 extension Page {
     @discardableResult
-    func scene<T>(_ title: String, _ handler: (Self) -> T) -> T {
+    func scene<T: Page>(_ title: String, _ handler: (Self) -> T) -> T {
         handler(self)
     }
 }
@@ -185,7 +177,7 @@ private extension XCUIElement {
     @discardableResult
     func failIfNotExists(file: StaticString, line: UInt) -> Self {
         if !exists {
-            XCTFail(file: file, line: line)
+            XCTFail("\(description) not exists.", file: file, line: line)
         }
         return self
     }
