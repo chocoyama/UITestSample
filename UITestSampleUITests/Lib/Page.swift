@@ -18,81 +18,6 @@ protocol Page {
 
 extension Page {
     @discardableResult
-    func tap(
-        _ keyPath: KeyPath<Self, XCUIElement>,
-        count: Int = 1,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) -> Self {
-        let element = self[keyPath: keyPath].failIfNotExists(file: file, line: line)
-        (0..<count).forEach { _ in element.tap() }
-        return self
-    }
-    
-    @discardableResult
-    func type(
-        text: String,
-        for keyPath: KeyPath<Self, XCUIElement>,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) -> Self {
-        self[keyPath: keyPath]
-            .failIfNotExists(file: file, line: line)
-            .typeText(text)
-        return self
-    }
-    
-    @discardableResult
-    func swipeUp(
-        _ keyPath: KeyPath<Self, XCUIElement>,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) -> Self {
-        self[keyPath: keyPath]
-            .failIfNotExists(file: file, line: line)
-            .swipeUp()
-        return self
-    }
-    
-    @discardableResult
-    func swipeDown(
-        _ keyPath: KeyPath<Self, XCUIElement>,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) -> Self {
-        self[keyPath: keyPath]
-            .failIfNotExists(file: file, line: line)
-            .swipeDown()
-        return self
-    }
-    
-    @discardableResult
-    func swipeRight(
-        _ keyPath: KeyPath<Self, XCUIElement>,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) -> Self {
-        self[keyPath: keyPath]
-            .failIfNotExists(file: file, line: line)
-            .swipeRight()
-        return self
-    }
-    
-    @discardableResult
-    func swipeLeft(
-        _ keyPath: KeyPath<Self, XCUIElement>,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) -> Self {
-        self[keyPath: keyPath]
-            .failIfNotExists(file: file, line: line)
-            .swipeLeft()
-        return self
-    }
-}
-
-extension Page {
-    @discardableResult
     func waitForExistence(_ keyPath: KeyPath<Self, XCUIElement>, timeout: TimeInterval = 3.0) -> Self {
         let _ = self[keyPath: keyPath].waitForExistence(timeout: timeout)
         return self
@@ -122,25 +47,6 @@ extension Page {
         assertionHandler(self)
         return self
     }
-    
-    @discardableResult
-    func thenTransitionAndReturn<T: Page>(_ nextPageHandler: (T) -> Void) -> Self {
-        let nextPage = T.init(app: self.app)
-        nextPageHandler(nextPage)
-        return self
-    }
-    
-    @discardableResult
-    func thenTransitionTo<T: Page>(_ type: T.Type) -> T {
-        T.init(app: self.app)
-    }
-    
-    @discardableResult
-    func thenTransitionTo<T: Page>(_ nextPageHandler: (T) -> Void) -> T {
-        let nextPage = T.init(app: self.app)
-        nextPageHandler(nextPage)
-        return nextPage
-    }
 }
 
 extension Page {
@@ -158,27 +64,19 @@ extension Page {
 }
 
 struct Scenario {
-    init(_ title: String = "")  {}
+    init(_ title: String = "") {}
     
     @discardableResult
-    func scene<T: Page>(_ title: String, _ handler: () -> T) -> T {
-        handler()
+    func start<T: Page>(from page: T) -> T {
+        page
     }
 }
 
 extension Page {
     @discardableResult
     func scene<T: Page>(_ title: String, _ handler: (Self) -> T) -> T {
-        handler(self)
-    }
-}
-
-private extension XCUIElement {
-    @discardableResult
-    func failIfNotExists(file: StaticString, line: UInt) -> Self {
-        if !exists {
-            XCTFail("\(description) not exists.", file: file, line: line)
+        XCTContext.runActivity(named: title) { _ in
+            return handler(self)
         }
-        return self
     }
 }

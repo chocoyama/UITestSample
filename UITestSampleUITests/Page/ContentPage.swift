@@ -12,14 +12,34 @@ import XCTest
 struct ContentPage: Page {
     var app: XCUIApplication
     
-    var favoriteButton: XCUIElement { app.buttons["ContentView.FavoriteButton"] }
     var favoriteText: XCUIElement { app.staticTexts["ContentView.FavoriteText"] }
-    var starButton: XCUIElement { app.buttons["ContentView.StarButton"] }
     var starText: XCUIElement { app.staticTexts["ContentView.StarText"] }
-    var presentationButton: XCUIElement { app.buttons["ContentView.PresentationButton"] }
+    private var favoriteButton: XCUIElement { app.buttons["ContentView.FavoriteButton"] }
+    private var starButton: XCUIElement { app.buttons["ContentView.StarButton"] }
+    private var presentationButton: XCUIElement { app.buttons["ContentView.PresentationButton"] }
     
     init(app: XCUIApplication) {
         self.app = app
+    }
+    
+    @discardableResult
+    func incrementFavorite(count: Int) -> Self {
+        let _ = favoriteButton.waitForExistence(timeout: 3.0)
+        (0..<count).forEach { _ in self.favoriteButton.tap() }
+        return self
+    }
+    
+    @discardableResult
+    func incrementStar(count: Int) -> Self {
+        let _ = starButton.waitForExistence(timeout: 3.0)
+        (0..<count).forEach { _ in self.starButton.tap() }
+        return self
+    }
+    
+    @discardableResult
+    func visitList() -> ListPage {
+        presentationButton.tap()
+        return ListPage(app: app)
     }
     
     func visit() -> ContentPage {

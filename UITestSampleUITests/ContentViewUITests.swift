@@ -10,23 +10,19 @@ import XCTest
 
 class ContentViewUITests: XCTestCase {
     
-    var contentPage: ContentPage!
-
     override func setUp() {
         continueAfterFailure = true
-        contentPage = ContentPage(app: XCUIApplication())
     }
-    
+        
     func testUIRecording() {
         let app = XCUIApplication()
         app.launch()
         
         XCTAssertEqual(app.staticTexts["ContentView.FavoriteText"].label, "0")
-        XCTAssertEqual(app.staticTexts["ContentView.StarText"].label, "0")
-        
         app.buttons["ContentView.FavoriteButton"].tap()
         XCTAssertEqual(app.staticTexts["ContentView.FavoriteText"].label, "1")
         
+        XCTAssertEqual(app.staticTexts["ContentView.StarText"].label, "0")
         let starButton = app.buttons["ContentView.StarButton"]
         starButton.tap()
         starButton.tap()
@@ -67,46 +63,41 @@ class ContentViewUITests: XCTestCase {
     }
 
     func testPageObject() {
-        contentPage
-            .visit()
-            .waitForExistence(\.favoriteText).then { XCTAssertEqual($0.favoriteText.label, "0") }
-            .waitForExistence(\.starText).then { XCTAssertEqual($0.starText.label, "0") }
-            .tap(\.favoriteButton).then { XCTAssertEqual($0.favoriteText.label, "1") }
-            .tap(\.starButton, count: 3).then { XCTAssertEqual($0.starText.label, "3") }
-            .screenshot(context: self, name: "ContentView")
-            .tap(\.presentationButton).thenTransitionTo { (listPage: ListPage) in
-                listPage.waitForExistence(\.list).then { XCTAssertTrue($0.list.exists) }
-                    .screenshot(context: self, name: "ListView")
-                    .tap(\.thirdCell).thenTransitionTo { (detailPage: DetailPage) in
-                        detailPage.waitForExistence(\.text).then { XCTAssertEqual($0.text.label, "2") }
-                            .screenshot(context: self, name: "DetailView")
-                    }
+        ContentPage(app: .init())
+            .visit().then {
+                XCTAssertEqual($0.favoriteText.label, "0")
+                XCTAssertEqual($0.starText.label, "0")
             }
+            .incrementFavorite(count: 1).then { XCTAssertEqual($0.favoriteText.label, "1") }
+            .incrementStar(count: 3).then { XCTAssertEqual($0.starText.label, "3") }
+            .screenshot(context: self, name: "ContentView")
+            .visitList().then { XCTAssertTrue($0.list.exists) }
+            .screenshot(context: self, name: "ListView")
+            .visitDetail().then { XCTAssertEqual($0.text.label, "2") }
+            .screenshot(context: self, name: "DetailView")
     }
     
     func testScenario() {
-        Scenario("アプリ起動から詳細画面への遷移まで")
-            .scene("ContentViewが表示される") {
+        Scenario("アプリ起動から詳細画面への遷移まで").start(from: ContentPage(app: .init()))
+            .scene("ContentViewが表示され、いいね数とスター数を変更する") { (contentPage: ContentPage) -> ContentPage in
                 contentPage
-                    .visit()
-                    .waitForExistence(\.favoriteText).then { XCTAssertEqual($0.favoriteText.label, "0") }
-                    .waitForExistence(\.starText).then { XCTAssertEqual($0.starText.label, "0") }
-                    .tap(\.favoriteButton).then { XCTAssertEqual($0.favoriteText.label, "1") }
-                    .tap(\.starButton, count: 3).then { XCTAssertEqual($0.starText.label, "3") }
+                    .visit().then {
+                        XCTAssertEqual($0.favoriteText.label, "0")
+                        XCTAssertEqual($0.starText.label, "0")
+                    }
+                    .incrementFavorite(count: 1).then { XCTAssertEqual($0.favoriteText.label, "1") }
+                    .incrementStar(count: 3).then { XCTAssertEqual($0.starText.label, "3") }
                     .screenshot(context: self, name: "ContentView")
-                    .tap(\.presentationButton).thenTransitionTo(ListPage.self)
             }
-            .scene("ボタンをタップしてListViewに遷移後") { (listPage: ListPage) in
-                listPage
-                    .waitForExistence(\.list).then { XCTAssertTrue($0.list.exists) }
+            .scene("ContentViewからListViewに遷移する") { (contentPage: ContentPage) -> ListPage in
+                contentPage
+                    .visitList().then { XCTAssertTrue($0.list.exists) }
                     .screenshot(context: self, name: "ListView")
-                    .tap(\.thirdCell).thenTransitionTo(DetailPage.self)
             }
-            .scene("セルをタップしてDetailViewに遷移後") { (detailPage: DetailPage) in
-                detailPage
-                    .waitForExistence(\.text).then { XCTAssertEqual($0.text.label, "2") }
+            .scene("ListViewからDetailViewに遷移する") { (listPage: ListPage) -> DetailPage in
+                listPage
+                    .visitDetail().then { XCTAssertEqual($0.text.label, "2") }
                     .screenshot(context: self, name: "DetailView")
             }
-        
     }
 }

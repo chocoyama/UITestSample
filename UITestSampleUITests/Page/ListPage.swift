@@ -18,10 +18,14 @@ struct ListPage: Page {
         self.app = app
     }
     
+    func visitDetail() -> DetailPage {
+        thirdCell.tap()
+        return DetailPage(app: app)
+    }
+    
     func visit() -> ListPage {
         ContentPage(app: app)
             .visit()
-            .tap(\.presentationButton)
-        return self
+            .visitList()
     }
 }
